@@ -120,6 +120,7 @@
             
             //The function that runs when you submit a search
             $("#submit").on("click", function(){
+                $("#results-body").empty();
                 //Keeps it from submitting to a database
                 event.preventDefault();
                 //creates an array and pushes text field inputs into it
