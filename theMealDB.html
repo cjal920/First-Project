@@ -102,64 +102,87 @@
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script type="text/javascript">
-            //Basic API get code. 
+            //Setting up some variables. Not sure if they need to be global, but it shouldn't hurt the script
             var categoryC = "";
             var categoryI = "";
             var categoryA = "";
             var categoryN = "";
+            
+            //function I dug up to help with handling filtering
+            function counter(array, element) {
+                var count = 0;
+                for(var i = 0; i < array.length; ++i){
+                    if(array[i] == element)
+                    count++;
+                }
+                return count
+            }
+            
+            //The function that runs when you submit a search
             $("#submit").on("click", function(){
+                //Keeps it from submitting to a database
                 event.preventDefault();
+                //creates an array and pushes text field inputs into it
                 var categoryArray = [];
-                console.log("test")
                 if ( $("#mealName").val().trim() != "") {
                     categoryN = "search.php?s=" + $("#mealName").val().trim();
-                    categoryArray.push(categoryN);                }
-
-                if ( $("#mealCategory").val().trim() != "") {
-                    categoryC = "filter.php?c=" + $("#mealCategory").val().trim();
-                    categoryArray.push(categoryC)}
+                    categoryArray.push(categoryN);}
                     
-                    if ( $("#ingredients").val().trim() != "") {
-                        categoryI = "filter.php?i=" + $("#ingredients").val().trim();
-                        categoryArray.push(categoryI)}
-
-                        if ( $("#areaOrigin").val().trim() != "") {
-                            categoryA = "filter.php?a=" + $("#areaOrigin").val().trim();
-                            categoryArray.push(categoryA)}
-
-                            console.log(categoryArray)
-                            var tempArray = [];
-                            for (i=0; i<categoryArray.length; i++) {
-                                if (categoryArray.length == 1) {}
-                                var queryUrl = "https://www.themealdb.com/api/json/v1/1/" + categoryArray[i]
-                                console.log(queryUrl)
-                                $.ajax({
-                                    url: queryUrl,
-                                    method: "GET"
-                                }).then(function(response) {
-                                    console.log(response.meals);
-                                    $.each(response.meals, function(index, value) {
-                                        console.log(tempArray.indexOf(value))
-                                        if (tempArray.indexOf(value.strMeal) >= 0){
-                                            var tr = $("<tr>")
-                                                var td = $("<td>")
-                                                    var p = $("<p>")
-                                                        $(p).text(value.strMeal)
-                                                        console.log(p)
-                                                        $(td).append(p).attr("database-id", value.idMeal).addClass("recipeLink");
-                                                        $(tr).append(td);
-                                                        $("#results-body").append(tr);  
-                                                    }
-                                        else {
-                                            tempArray.push(value.strMeal)
-                                        }
-                                                });
-                                            });
-                                        }
+                    if ( $("#mealCategory").val().trim() != "") {
+                        categoryC = "filter.php?c=" + $("#mealCategory").val().trim();
+                        categoryArray.push(categoryC)}
+                        
+                        if ( $("#ingredients").val().trim() != "") {
+                            categoryI = "filter.php?i=" + $("#ingredients").val().trim();
+                            categoryArray.push(categoryI)}
+                            
+                            if ( $("#areaOrigin").val().trim() != "") {
+                                categoryA = "filter.php?a=" + $("#areaOrigin").val().trim();
+                                categoryArray.push(categoryA)}
                                 
-                                                                ;
-                                                            })
+                                console.log(categoryArray)
+                                // setting up an array for filtering
+                                var tempArray = [];
+                                // Runs multiple GET methods for each query term
+                                for (i=0; i<categoryArray.length; i++) {
+                                    //Sets up the query Url
+                                    var queryUrl = "https://www.themealdb.com/api/json/v1/1/" + categoryArray[i]
+                                    console.log(queryUrl)
+                                    //runs the GET method
+                                    $.ajax({
+                                        url: queryUrl,
+                                        method: "GET"
+                                    }).then(function(response) {
+                                        console.log(response.meals);
+                                        //Runs a for loop for each meal that comes up each time the GET method is run.
+                                        $.each(response.meals, function(index, value) {
+                                            //Pushes the meal into the array
+                                            tempArray.push(value.strMeal)
+                                            //checks to see how many copies of that meal are in the array
+                                            var countNumber = counter(tempArray, value.strMeal)
+                                            console.log(countNumber);
+                                            //If the number of copies of that meal are equal to the number of GET methods run, then it suits all checked categories, and the meal is submitted to the table
+                                            if (countNumber == categoryArray.length){
+                                                var tr = $("<tr>")
+                                                    var td = $("<td>")
+                                                        var p = $("<p>")
+                                                            $(p).text(value.strMeal)
+                                                            console.log(p)
+                                                            $(td).append(p).attr("database-id", value.idMeal).addClass("recipeLink");
+                                                            $(tr).append(td);
+                                                            $("#results-body").append(tr);  
+                                                        }
+                                                        else {
                                                             
-                                                        </script>
-                                                    </body>
-                                                    </html>
+                                                        }
+                                                    });
+                                                });
+                                            }
+                                            
+                                            //Promise.all - give it an array of requests
+                                            ;
+                                        })
+                                        
+                                    </script>
+                                </body>
+                                </html>
