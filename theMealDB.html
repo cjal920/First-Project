@@ -167,9 +167,8 @@
                                                 var tr = $("<tr>")
                                                     var td = $("<td>")
                                                         var p = $("<p>")
-                                                            $(p).text(value.strMeal)
-                                                            console.log(p)
-                                                            $(td).append(p).attr("database-id", value.idMeal).addClass("recipeLink");
+                                                            $(p).text(value.strMeal).attr("id", value.idMeal).addClass("recipeLink")
+                                                            $(td).append(p);
                                                             $(tr).append(td);
                                                             $("#results-body").append(tr);  
                                                         }
@@ -183,6 +182,50 @@
                                             //Promise.all - give it an array of requests
                                             ;
                                         })
+
+                        $(document).on("click", ".recipeLink", function(){
+                            event.preventDefault();
+                            console.log("recipe clicker's working, bruh")
+                            recipeID = $(this).attr("id");
+                            queryUrl = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=" + recipeID;
+                            $.ajax({
+                                        url: queryUrl,
+                                        method: "GET"
+                                    }).then(function(response) {
+                                    var img = $("<img>");
+                                    var p1 = $("<p>");
+                                    formatter = response.meals[0].strInstructions;
+                                    formatter.replace('/\r\n', '<br><br>');
+                                    $(img).attr("src", response.meals[0].strMealThumb).addClass("img-responsive");
+                                    $(p1).html(formatter);
+                                    var ingArray = [];
+                                    var meaArray = [];
+                                
+
+                                    Object.keys(response.meals[0]).forEach(function(key) {
+                                        console.log(key, response.meals[0][key])
+                                    if (key.startsWith("strIngre")){
+                                        if (response.meals[0][key] != "" || response.meals[0][key] [i] != null) {
+                                            ingArray.push(response.meals[0][key])
+                                    }}
+                                });
+
+                                     Object.keys(response.meals[0]).forEach(function(key) {
+                                    if (key.startsWith("strMeas")){
+                                        if (response.meals[0][key] != "" || response.meals[0][key] [i] != null) {
+                                            meaArray.push(response.meals[0][key])
+                                    }}
+                                });
+
+                                    for (var i = 0; i < ingArray.length; i++){
+                                        $(p1).append("<br>" + ingArray[i] + ": " + meaArray[i])
+                                    }
+                                    console.log("Still working!")
+                                    console.log(img, p1)
+                                    $("#test-div").append(img).append(p1)
+                                    })
+
+                        })
                                         
                                     </script>
                                 </body>
