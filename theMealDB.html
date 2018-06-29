@@ -20,6 +20,7 @@
     </head>
     
     <body>
+        <div id="test-div"></div>
         <div class="container">
             <div class="jumbotron jumbotron-fluid">
                 <h1 class="text-center">Watch While You Cook!</h1>
@@ -193,17 +194,21 @@
                                         method: "GET"
                                     }).then(function(response) {
                                     var img = $("<img>");
-                                    var p1 = $("<p>");
-                                    formatter = response.meals[0].strInstructions;
-                                    formatter.replace('/\r\n', '<br><br>');
+                                    var div = $("<div>");
+                                    var formatter = response.meals[0].strInstructions.split('\r\n');
+                                    console.log(formatter)
+                                    for (i = 0; i < formatter.length; i++) {
+                                        var p = $("<p>");
+                                        $(p).text(formatter[i]);
+                                        console.log(p)
+                                        $(div).append(p);}
+
                                     $(img).attr("src", response.meals[0].strMealThumb).addClass("img-responsive");
-                                    $(p1).html(formatter);
                                     var ingArray = [];
                                     var meaArray = [];
                                 
 
                                     Object.keys(response.meals[0]).forEach(function(key) {
-                                        console.log(key, response.meals[0][key])
                                     if (key.startsWith("strIngre")){
                                         if (response.meals[0][key] != "" || response.meals[0][key] [i] != null) {
                                             ingArray.push(response.meals[0][key])
@@ -218,11 +223,11 @@
                                 });
 
                                     for (var i = 0; i < ingArray.length; i++){
-                                        $(p1).append("<br>" + ingArray[i] + ": " + meaArray[i])
+                                        $(div).append("<br>" + ingArray[i] + ": " + meaArray[i])
                                     }
                                     console.log("Still working!")
-                                    console.log(img, p1)
-                                    $("#test-div").append(img).append(p1)
+                                    console.log(img, div)
+                                    $("#test-div").append(img).append(div)
                                     })
 
                         })
