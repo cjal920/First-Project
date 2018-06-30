@@ -182,38 +182,50 @@
 
   var database = firebase.database();
 
-  var dish = "";
-  var category = "";
-  var region = "";
-  var ingredients = "";
-
   $("#btn-search").on("click", function(event)  {
     event.preventDefault();
   
-    dish = $("#dish").val().trim();
-    category = $("#category").val().trim();
-    region = $("#region").val().trim();
-    ingredients = $("#ingredients").val().trim();
+    var dishName = $("#dish").val().trim();
+    var categoryName = $("#category").val().trim();
+    var regionName = $("#region").val().trim();
+    var ingredientsName = $("#ingredients").val().trim();
 
-    database.ref().set({
-        dish: dish,
-        category: category,
-        region: region,
-        ingredients: ingredients 
+    var newDish = {
+        dish: dishName,
+        category: categoryName,
+        region: regionName,
+        ingredients: ingredientsName
+    };
+
+    database.ref().push(newDish);
+
+    $("#dish").val("");
+    $("#category").val("");
+    $("#region").val("");
+    $("#ingredients").val("");
     });
 
-    });
+    database.ref().on("child_added", function(childSnapshot)    {
 
-    database.ref().on("value", function(snapshot)   {
-      console.log(snapshot.val().dish);
+    var dishName = childSnapshot.val().dish;
+    var categoryName = childSnapshot.val().category;
+    var regionName = childSnapshot.val().region;
+    var ingredientsName = childSnapshot.val().ingredients;
 
-      $("#dish-display").text(snapshot.val().dish);
-      $("#category-display").text(snapshot.val().category);
-      $("#region-display").text(snapshot.val().region);
-      $("#ingredients-display").text(snapshot.val().ingredients);
+    var newRow = $("<tr>").append(
+    $("<td>").text(dishName),
+    $("<td>").text(categoryName),
+    $("<td>").text(regionName),
+    $("<td>").text(ingredientsName)
+    );
 
-    }, function(errorObject)    {
-        console.log("Errors handled: " + errorObject.code);
+    $("#ingredient-table > tbody").append(newRow);
+
+    console.log(dishName);
+    console.log(categoryName);
+    console.log(regionName);
+    console.log(ingredientsName);
+
     });
 
 
